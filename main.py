@@ -6,12 +6,11 @@ from mpl_toolkits.mplot3d import Axes3D
 def plot_3d_trajectory(path_3d, title):
     """
     Plota a trajetória do ponto (x,y,z) no espaço 3D.
-    Não plota a superfície (pois seria 4D), apenas o caminho percorrido.
     """
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection='3d')
     
-    # Converte lista de arrays para array numpy para facilitar indexação
+    # Converte lista de arrays para array numpy
     path = np.array(path_3d)
     xs = path[:, 0]
     ys = path[:, 1]
@@ -31,15 +30,17 @@ def plot_3d_trajectory(path_3d, title):
     ax.set_title(title)
     ax.legend()
     
-    # Salvar
+    # 1. Salvar Primeiro
     filename = 'trajetoria_3d.png'
     plt.savefig(filename)
     print(f"[INFO] Gráfico 3D salvo como '{filename}'.")
-    plt.close()
+    
+    # 2. Mostrar na Tela (Substitui o plt.close())
+    plt.show() 
 
 def plot_comparison(opt, path_const, path_ips, title):
     """
-    Gera dois gráficos e SALVA em arquivo.
+    Gera dois gráficos: Convergência e Trajetória.
     """
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
     
@@ -78,10 +79,13 @@ def plot_comparison(opt, path_const, path_ips, title):
     
     plt.suptitle(title)
     
+    # 1. Salvar Primeiro
     filename = 'resultado_grafico.png'
     plt.savefig(filename)
-    print(f"\n[INFO] Gráfico salvo como '{filename}'. Abra este arquivo para ver os resultados.")
-    plt.close()
+    print(f"\n[INFO] Gráfico salvo como '{filename}'.")
+    
+    # 2. Mostrar na Tela (Substitui o plt.close())
+    plt.show()
 
 def run_tests():
     opt = OptimizationMethods()
@@ -90,7 +94,7 @@ def run_tests():
     # CONFIGURAÇÃO DOS TESTES
     # ==========================================
     start_pos_2d = [-1.2, 1.0] 
-    MAX_ITER = 10000  # Aumentei para tentar convergir antes do limite
+    MAX_ITER = 10000  
     
     print("--- INICIANDO BATERIA DE TESTES ---\n")
 
@@ -125,7 +129,6 @@ def run_tests():
     print(f"   [IPS Worst] Iterações: {iter_ips}   | Valor Final: {val_final_ips:.6f}")
 
     # --- GERAR GRÁFICOS ---
-    # Agora salvando em arquivo ao invés de apenas mostrar
     plot_comparison(opt, path_const, path_ips, "Comparação: Constante vs IPS (Rosenbrock 2D)")
 
     # ---------------------------------------------------------
@@ -146,13 +149,12 @@ def run_tests():
     print(f"   [IPS Worst ] Iterações: {iter_ips} | Valor Final: {val_final_ips:.6g}")
     print(f"   [IPS Cyclic] Iterações: {iter_cyc} | Valor Final: {val_final_cyc:.6g}")
 
-    # Lógica de comparação melhorada
     if iter_ips < iter_cyc:
         print("   -> 'Worst' foi mais rápida (menos iterações).")
     elif iter_cyc < iter_ips:
         print("   -> 'Cyclic' foi mais rápida (menos iterações).")
     else:
-        print("   -> Empate em iterações. Verifique quem chegou mais perto de 0 (Valor Final).")
+        print("   -> Empate em iterações.")
 
     # ---------------------------------------------------------
     # TESTE 3: Rosenbrock 3D
@@ -170,7 +172,9 @@ def run_tests():
         max_iter=MAX_ITER
     )
     final_3d = opt.rosenbrock_3d(path_3d[-1])
+    
     plot_3d_trajectory(path_3d, "Otimização Rosenbrock 3D (Caminho percorrido)")
+    
     print(f"   [3D IPS] Iterações: {iter_3d} | Mínimo atingido: {path_3d[-1]}")
     print(f"   Valor da função no final: {final_3d:.6f}")
 
